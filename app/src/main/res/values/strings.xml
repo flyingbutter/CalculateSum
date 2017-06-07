@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Calculate Sum</string>
+    <string name="sum_sign">+</string>
+    <string name="entry_text">Enter a number</string>
+    <string name="btn_text">Calculate Sum</string>
+    <string name="sum_text">Sum</string>
+</resources>
