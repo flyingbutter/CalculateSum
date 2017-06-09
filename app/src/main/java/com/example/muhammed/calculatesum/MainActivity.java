@@ -27,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void showGpsLocation(View view) {
+        Intent intent = new Intent(this, ShowLocation.class);
+        startActivity(intent);
+    }
+
     private void writeToFile(String data,Context context) {
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(getString(R.string.history_save_file), Context.MODE_APPEND));

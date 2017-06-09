@@ -6,4 +6,8 @@
     <string name="sum_text">Sum</string>
     <string name="show_history">Show Calculation History</string>
     <string name="history_save_file">CalculationHistory.txt</string>
+    <string name="location_text">GPS LOCATION</string>
+    <string name="lattitude_text">Lattitude</string>
+    <string name="longtitude_text">Longtitude</string>
+    <string name="gps_button_text">SHOW GPS LOCATION</string>
 </resources>
