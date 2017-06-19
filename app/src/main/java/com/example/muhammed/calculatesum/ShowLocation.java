@@ -1,9 +1,7 @@
 package com.example.muhammed.calculatesum;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +21,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+
+import static android.location.LocationManager.GPS_PROVIDER;
 
 
 public class ShowLocation extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -76,7 +76,7 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
                 .build();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!locationManager.isProviderEnabled(GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }
 
@@ -86,6 +86,14 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle bundle) {
+       gps();
+
+    }
+
+
+
+
+    public void gps(){
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(1000);
@@ -93,43 +101,53 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             float LOCATION_REFRESH_DISTANCE = 0;
-            long LOCATION_REFRESH_TIME = 5;
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mlocationListener);
+            long LOCATION_REFRESH_TIME = 0;
+            locationManager.requestLocationUpdates(GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mlocationListener);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
-                // Toast.makeText(getApplicationContext(), "YES! mLastLocation!=null", Toast.LENGTH_SHORT).show();
-                //  Log.i(TAG, mLastLocation.toString());
 
-                lats.setText("Latitude:" + Double.toString(mLastLocation.getLatitude()));
-                longs.setText("Longitude:" + Double.toString(mLastLocation.getLongitude()));
-                  h = new Handler();
-                final int delay = 10000; //milliseconds
+            if (mLastLocation == null) {
+                return;
+            }
 
-                h.postDelayed(myRunnable= new Runnable() {
+            h = new Handler();
+            final int delay = 10000; //milliseconds
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-                    public void run() {
+            lats.setText("Latitude:" + Double.toString(mLastLocation.getLatitude()));
+            longs.setText("Longitude:" + Double.toString(mLastLocation.getLongitude()));
+            h.postDelayed(myRunnable= new Runnable() {
+
+                public void run() {
+                    if (mLastLocation != null) {
+                        // Toast.makeText(getApplicationContext(), "YES! mLastLocation!=null", Toast.LENGTH_SHORT).show();
+                        //  Log.i(TAG, mLastLocation.toString());
+                        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+                        lats.setText("Latitude:" + Double.toString(mLastLocation.getLatitude()));
+                        longs.setText("Longitude:" + Double.toString(mLastLocation.getLongitude()));
+
                         if (ActivityCompat.checkSelfPermission(getWindow().findViewById(android.R.id.content).getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getWindow().findViewById(android.R.id.content).getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                             //ActivityCompat.requestPermissions(,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
                             return;
                         }
-                        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-                        lats.setText("Latitude:"+Double.toString(mLastLocation.getLatitude()));
-                        longs.setText("Longitude"+Double.toString(mLastLocation.getLongitude()));
+
                         h.postDelayed(this, delay);
-                    }
-                }, delay);
-               // double latitude = mLastLocation.getLatitude();  //Save latitude in a double variable
-               // double longitude = mLastLocation.getLongitude(); //Save longitude in a double variable
-                //Toast to display Coordinates
-              //  Toast.makeText(getApplicationContext(), "Latitude = " + latitude + "\nLongitude = " + longitude, Toast.LENGTH_SHORT).show();
 
-            }
+                        // double latitude = mLastLocation.getLatitude();  //Save latitude in a double variable
+                        // double longitude = mLastLocation.getLongitude(); //Save longitude in a double variable
+                        //Toast to display Coordinates
+                        //  Toast.makeText(getApplicationContext(), "Latitude = " + latitude + "\nLongitude = " + longitude, Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }, delay);
         }
 
     }
+
     @Override
     public void onBackPressed() {
         h.removeCallbacksAndMessages(null);
@@ -151,7 +169,6 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onProviderEnabled(String provider) {
-
     }
 
     @Override
@@ -178,10 +195,20 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        h.removeCallbacks(myRunnable);
+    protected void onPause() {
 
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onStop() {
+      //  mGoogleApiClient.disconnect();
+try {
+    h.removeCallbacks(myRunnable);
+
+}catch (Exception e)
+{}
         super.onStop();
 
     }
