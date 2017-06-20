@@ -36,6 +36,8 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
     private Location mLastLocation;
     Handler h;
     Runnable myRunnable;
+    public static double latitude;
+    public static double longitude;
 
     LocationListener mlocationListener = new LocationListener() {
         @Override
@@ -68,7 +70,8 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_location);
 
-
+latitude=0;
+        longitude=0;
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -112,7 +115,8 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
             h = new Handler();
             final int delay = 10000; //milliseconds
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
+            latitude=mLastLocation.getLatitude();
+            longitude=mLastLocation.getLongitude();
             lats.setText("Latitude:" + Double.toString(mLastLocation.getLatitude()));
             longs.setText("Longitude:" + Double.toString(mLastLocation.getLongitude()));
             h.postDelayed(myRunnable= new Runnable() {
@@ -122,7 +126,8 @@ public class ShowLocation extends AppCompatActivity implements GoogleApiClient.C
                         // Toast.makeText(getApplicationContext(), "YES! mLastLocation!=null", Toast.LENGTH_SHORT).show();
                         //  Log.i(TAG, mLastLocation.toString());
                         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
+                        latitude=mLastLocation.getLatitude();
+                        longitude=mLastLocation.getLongitude();
                         lats.setText("Latitude:" + Double.toString(mLastLocation.getLatitude()));
                         longs.setText("Longitude:" + Double.toString(mLastLocation.getLongitude()));
 
